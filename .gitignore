@@ -1,0 +1,10 @@
+*.dep
+*.o
+*.un~
+install/
+**/le/*
+**/a.le/*
+*.bin
+*.sym
+*.boot
+*.bios
