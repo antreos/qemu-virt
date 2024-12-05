@@ -56,5 +56,8 @@ prebuilt:
 run:
 	@$(MAKE) -Cimages run
 
+run-sudo:
+	@$(MAKE) -Cimages run-sudo
+
 run-tap:
 	@$(MAKE) -Cimages run-tap
