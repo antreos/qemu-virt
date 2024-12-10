@@ -39,7 +39,7 @@ run: ifs-$(BOARD).bin $(BOARD).bios
          -bios $(BOARD).bios \
          -device loader,file=ifs-$(BOARD).bin,addr=$(IMAGE_LOAD_ADDR),force-raw=true
 
-run-sudo:
+run-sudo: ifs-$(BOARD).bin $(BOARD).bios
 	@sudo qemu-system-aarch64 \
          -M virt,gic-version=3 \
          -cpu cortex-a72 \
@@ -51,7 +51,7 @@ run-sudo:
          -bios $(BOARD).bios \
          -device loader,file=ifs-$(BOARD).bin,addr=$(IMAGE_LOAD_ADDR),force-raw=true
 
-run-tap:
+run-tap: ifs-$(BOARD).bin $(BOARD).bios
 	@sudo qemu-system-aarch64 \
          -M virt,gic-version=3 \
          -cpu cortex-a72 \
