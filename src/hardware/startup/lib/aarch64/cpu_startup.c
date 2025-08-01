@@ -38,13 +38,25 @@ aarch64_cpuid_find(void) {
 
 	struct aarch64_cpuid *id;
 	struct aarch64_cpuid	**idp = aarch64_cpuid;
+	struct aarch64_cpuid *fallback = NULL;
+	
 	for(;;) {
 		id = *idp;
 		if(id == NULL) break;
+		
+		// Save generic fallback
+		if(id->midr == 0x00000000) {
+			fallback = id;
+			++idp;
+			continue;
+		}
+		
 		if(id->midr == (cpuid & CPUID_MASK)) break;
 		++idp;
 	}
-	return id;
+	
+	// Return exact match or fallback to generic
+	return id ? id : fallback;
 }
 
 

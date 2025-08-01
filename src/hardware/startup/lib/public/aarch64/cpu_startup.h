@@ -150,6 +150,12 @@ extern struct aarch64_cpuid	cpuid_a78ae;
 extern struct aarch64_cpuid	cpuid_d15;
 extern struct aarch64_cpuid	cpuid_d20;
 
+extern struct aarch64_cpuid	cpuid_graviton1;
+extern struct aarch64_cpuid	cpuid_graviton2;
+extern struct aarch64_cpuid	cpuid_graviton3;
+extern struct aarch64_cpuid	cpuid_graviton4;
+extern struct aarch64_cpuid	cpuid_generic;
+
 /*
  * ------------------------------------------------------------------
  * ARMv8 Cache Callouts

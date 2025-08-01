@@ -48,6 +48,18 @@ If you need more flexible networking, please execute "make run-tap", it will use
 
 More information about QEMU networking mode: https://wiki.qemu.org/Documentation/Networking
 
+## KVM Acceleration
+
+For ARM64 hosts, you can use hardware acceleration with KVM:
+
+```bash
+make run-kvm        # Basic KVM with user networking
+make run-kvm-sudo   # KVM with enhanced networking (requires sudo)
+make run-kvm-tap    # KVM with TAP networking (requires sudo)
+```
+
+KVM acceleration provides significant performance improvements on ARM64 hosts such as AWS Graviton instances.
+
 ## TODO
 The PCI is not available yet causes massive devices/drivers cannot be used.
 

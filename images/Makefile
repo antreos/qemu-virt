@@ -63,5 +63,44 @@ run-tap: ifs-$(BOARD).bin $(BOARD).bios
          -bios $(BOARD).bios \
          -device loader,file=ifs-$(BOARD).bin,addr=$(IMAGE_LOAD_ADDR),force-raw=true
 
+run-kvm: ifs-$(BOARD).bin $(BOARD).bios
+	@qemu-system-aarch64 \
+         -M virt,gic-version=3 \
+         -cpu host \
+         -accel kvm \
+         -m 256M \
+         -nographic \
+         -nic none \
+         -netdev user,id=qnxnet \
+         -device virtio-net-device,netdev=qnxnet \
+         -bios $(BOARD).bios \
+         -device loader,file=ifs-$(BOARD).bin,addr=$(IMAGE_LOAD_ADDR),force-raw=true
+
+run-kvm-sudo: ifs-$(BOARD).bin $(BOARD).bios
+	@sudo qemu-system-aarch64 \
+         -M virt,gic-version=3 \
+         -cpu host \
+         -accel kvm \
+         -m 256M \
+         -nographic \
+         -nic none \
+         -netdev user,id=qnxnet \
+         -device virtio-net-device,netdev=qnxnet \
+         -bios $(BOARD).bios \
+         -device loader,file=ifs-$(BOARD).bin,addr=$(IMAGE_LOAD_ADDR),force-raw=true
+
+run-kvm-tap: ifs-$(BOARD).bin $(BOARD).bios
+	@sudo qemu-system-aarch64 \
+         -M virt,gic-version=3 \
+         -cpu host \
+         -accel kvm \
+         -m 256M \
+         -nographic \
+         -nic none \
+         -netdev tap,id=qnxnet \
+         -device virtio-net-device,netdev=qnxnet \
+         -bios $(BOARD).bios \
+         -device loader,file=ifs-$(BOARD).bin,addr=$(IMAGE_LOAD_ADDR),force-raw=true
+
 clean:
 	$(RM_HOST) ifs-$(BOARD).* $(BOARD).bios $(BOARD).bios.o *.sym

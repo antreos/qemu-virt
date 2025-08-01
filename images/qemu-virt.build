@@ -8,28 +8,37 @@
 [+keeplinked]
 [image=0x40200000]
 [virtual=aarch64le,raw -compress] boot = {
-    startup-qemu-virt -u reg
+    startup-qemu-virt -vvv -u reg
     PATH=/proc/boot:/sbin:/bin:/usr/bin:/usr/sbin:/usr/libexec LD_LIBRARY_PATH=/proc/boot:/lib:/usr/lib:/lib/dll:/lib/dll/pci procnto-smp-instr
 }
 
 [+script] startup-script = {
     SYSNAME=nto
     TERM=qansi
-    ENV=/etc/profile
+    ENV=/etc/Profile
 
+    display_msg "STARTUP-SCRIPT: Beginning startup script execution"
+    
     procmgr_symlink ../../proc/boot/ldqnx-64.so.2 /usr/lib/ldqnx-64.so.2
+    display_msg "STARTUP-SCRIPT: procmgr_symlink completed"
 
     ## Needed for ksh to run the echo command below
     pipe
+    display_msg "STARTUP-SCRIPT: pipe started"
 
     display_msg " "
     ksh -c "echo Welcome to QNX $(uname -r) on $(uname -m) !"
     display_msg " "
+    display_msg "STARTUP-SCRIPT: About to start core services"
 
     slogger2
+    display_msg "STARTUP-SCRIPT: slogger2 started"
     dumper
+    display_msg "STARTUP-SCRIPT: dumper started" 
     mqueue
+    display_msg "STARTUP-SCRIPT: mqueue started"
     random
+    display_msg "STARTUP-SCRIPT: random started"
 
     ############################################################################################
     ## I2C driver
@@ -52,9 +61,12 @@
     #######################################################################
     ## Console SERIAL driver
     #######################################################################
+    display_msg "STARTUP-SCRIPT: About to start serial driver"
     display_msg "Starting serial driver (/dev/ser1)"
     devc-serpl011 -b115200 -c48000000 -e -F -u1 0x9000000,33
+    display_msg "STARTUP-SCRIPT: devc-serpl011 started, waiting for /dev/ser1"
 	waitfor /dev/ser1
+    display_msg "STARTUP-SCRIPT: /dev/ser1 is ready"
 
     ############################################################################################
     ## Storage service
@@ -90,9 +102,13 @@
     ############################################################################################
     ## Start the main shell
     ############################################################################################
+    display_msg "STARTUP-SCRIPT: About to reopen /dev/ser1 for shell"
     reopen /dev/ser1
+    display_msg "STARTUP-SCRIPT: /dev/ser1 reopened successfully"
     display_msg "Starting shell ..."
+    display_msg "STARTUP-SCRIPT: About to start ksh shell"
     [+session] ksh &
+    display_msg "STARTUP-SCRIPT: Shell started in background"
 }
 
 

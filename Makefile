@@ -61,3 +61,12 @@ run-sudo:
 
 run-tap:
 	@$(MAKE) -Cimages run-tap
+
+run-kvm:
+	@$(MAKE) -Cimages run-kvm
+
+run-kvm-sudo:
+	@$(MAKE) -Cimages run-kvm-sudo
+
+run-kvm-tap:
+	@$(MAKE) -Cimages run-kvm-tap

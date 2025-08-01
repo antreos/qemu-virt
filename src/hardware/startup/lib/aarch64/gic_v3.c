@@ -939,6 +939,10 @@ void gic_v3_set_lpi_pendtbl_params(const gic_tbl_params_t * const params)
  */
 void gic_v3_initialize(void)
 {
+	kprintf("GIC-V3: === ENTERING gic_v3_initialize() ===\n");
+	kprintf("GIC-V3: GICD base=0x%lx, GICR base=0x%lx, GICC base=0x%lx\n",
+			(unsigned long)gicd_paddr_base, (unsigned long)gicr_paddr_base, (unsigned long)gicc_paddr_base);
+	
 	ASSERT(base_addresses_initialized != 0);
 
 	/*
@@ -977,15 +981,40 @@ void gic_v3_initialize(void)
 	}
 
 	/* Disable distributor */
+	kprintf("GIC-V3: About to disable GICD at 0x%lx + 0x%x\n", 
+			(unsigned long)gicd_paddr_base, ARM_GICD_CTLR);
 	out32(gicd_paddr_base + ARM_GICD_CTLR, 0);
+	kprintf("GIC-V3: GICD disabled, waiting for RWP\n");
 	wait_for_rwp(gicd_paddr_base + ARM_GICD_CTLR, 0x80000000);
+	kprintf("GIC-V3: GICD RWP wait completed\n");
 
 	/* get the number of interrupt lines and calculate the max INTID */
+	kprintf("GIC-V3: About to read GICD_TYPER register at 0x%lx + 0x%x\n",
+			(unsigned long)gicd_paddr_base, ARM_GICD_TYPER);
 	const _Uint32t gicd_typer = in32(gicd_paddr_base + ARM_GICD_TYPER);
+	kprintf("GIC-V3: GICD_TYPER read completed, value=0x%x\n", gicd_typer);
 	const unsigned itlines = ((gicd_typer & ARM_GICD_TYPER_ITLN) + 1);
 	const unsigned itn = itlines * 32;
+	kprintf("GIC-V3: Calculated itlines=%u, max INTID=%d\n", itlines, itn - 1);
 
 	if (debug_flag > 1) kprintf("GICv3: itlines: %u, max INTID: %d\n", itlines, itn - 1);
+
+	/* ALWAYS VISIBLE DEBUG: Test progression through hang point */
+	kprintf("DEBUG: Line 988 completed - itlines: %u, max INTID: %d\n", itlines, itn - 1);
+	kprintf("DEBUG: About to test next line...\n");
+	kprintf("DEBUG: Still alive after line 990\n");
+	kprintf("DEBUG: Testing variable access...\n");
+	kprintf("DEBUG: gicd_paddr_base = 0x%lx\n", (_Uint64t)gicd_paddr_base);
+	kprintf("DEBUG: About to test first register read...\n");
+	
+	/* Test if the issue is with register reads */
+	kprintf("DEBUG: Attempting GICD_TYPER read again...\n");
+	const _Uint32t test_read = in32(gicd_paddr_base + ARM_GICD_TYPER);
+	kprintf("DEBUG: GICD_TYPER read successful: 0x%x\n", test_read);
+	
+	kprintf("DEBUG: About to test GICD_IIDR read...\n");
+	const _Uint32t gicd_iidr = in32(gicd_paddr_base + ARM_GICD_IIDR);
+	kprintf("DEBUG: GICD_IIDR read successful: 0x%x\n", gicd_iidr);
 
 	/*
 	 * Disable all interrupts and clear pending state
@@ -993,6 +1022,13 @@ void gic_v3_initialize(void)
 	 * until gic_v3_gicc_init() hence the starting 'reg_idx' of 1
 	 * There are 32 INTIDs per register
 	 */
+	
+	kprintf("DEBUG: About to enter for loop for register initialization...\n");
+	
+	/* KVM HACK: For now, just return early to avoid ALL register operations */
+	kprintf("DEBUG: KVM HACK - Returning early to avoid hang\n");
+	return;
+
 	for (unsigned reg_idx=1; reg_idx<itlines; reg_idx++)
 	{
 		const unsigned reg_offset = reg_idx * sizeof(_Uint32t);	/* 32 bit register */

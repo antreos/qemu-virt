@@ -41,5 +41,12 @@ struct aarch64_cpuid	*aarch64_cpuid[] = {
 	&cpuid_d15,
 	&cpuid_d20,
 
+	&cpuid_graviton1,
+	&cpuid_graviton2,
+	&cpuid_graviton3,
+	&cpuid_graviton4,
+
+	&cpuid_generic,  // Must be last as fallback
+
 	0
 };
